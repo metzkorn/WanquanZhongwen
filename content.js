@@ -917,13 +917,15 @@ function makeHtml(result, showToneColors) {
         if (config.fontSize === 'small') {
             defClass += '-small';
         }
-        let translation = entry[4].replace(/\//g, '; ');
+        // let translation = entry[4].replace(/\//g, '; ');
+        let translation = "--"
+        
         html += '<br><span class="' + defClass + '">' + translation + '</span><br>';
 
-        // Grammar
-        if (config.grammar !== 'no' && result.grammar && result.grammar.index === i) {
-            html += '<br><span class="grammar">Press "g" for grammar and usage notes.</span><br><br>';
-        }
+        // // Grammar
+        // if (config.grammar !== 'no' && result.grammar && result.grammar.index === i) {
+        //     html += '<br><span class="grammar">Press "g" for grammar and usage notes.</span><br><br>';
+        // }
 
         texts[i] = [entry[2], entry[1], p[1], translation, entry[3]];
     }
