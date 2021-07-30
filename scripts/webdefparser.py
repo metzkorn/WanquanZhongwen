@@ -6,7 +6,15 @@ def find_def(char):
     url = f"https://www.zdic.net/hans/{char}"
     
    #"https://www.zdic.net/e/sci/index.php?field=0&classid=8&keyboard={char}"
-    response = requests.get(url)
+    for x in range (10000):
+        try: 
+          response = requests.get(url, verify = False)
+          break 
+        except requests.exceptions.ConnectionError: 
+            print("We're failing ahhhh")
+            continue
+        
+
     html = BeautifulSoup(response.content.decode('utf-8'), "lxml")
  
     get_ps = None
