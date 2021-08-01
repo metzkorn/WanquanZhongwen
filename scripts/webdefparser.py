@@ -13,6 +13,9 @@ def find_def(char):
         except requests.exceptions.ConnectionError: 
             print("We're failing ahhhh")
             continue
+        except requests.exceptions.RetryError: 
+            print("We're failing ahhhh")
+            continue
         
 
     html = BeautifulSoup(response.content.decode('utf-8'), "lxml")

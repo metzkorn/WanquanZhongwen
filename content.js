@@ -917,8 +917,9 @@ function makeHtml(result, showToneColors) {
         if (config.fontSize === 'small') {
             defClass += '-small';
         }
-        // let translation = entry[4].replace(/\//g, '; ');
-        let translation = "--"
+        let translation = entry[4];
+                //.replace(/\//g, '; ')
+        //let translation = "--"
         
         html += '<br><span class="' + defClass + '">' + translation + '</span><br>';
 

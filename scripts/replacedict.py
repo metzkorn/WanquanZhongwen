@@ -11,8 +11,8 @@ with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\cedict_ts.u8', "r
 
 ret_string = ""
 threads = []
-start = 5011
-step_size = 50
+start = 110011
+step_size = 100
 
 
 def process(i): 
@@ -31,9 +31,9 @@ def process(i):
         portion = lines[beg:end]
         for line in portion:
             current_word = ""
-            for char in line:
-                _ord = ord(char)
-                if _ord < 128:
+            for char in line:                                # Realizing I could've used
+                _ord = ord(char)                             # line.split()[1] to get current_word much faster
+                if _ord < 128:                               # ¯\_(ツ)_/¯
                     if space_flag and _ord==32 : 
                         space_flag_down = 1
                     elif _ord == 32:
@@ -67,9 +67,8 @@ def process(i):
 
 # signal.signal(signal.SIGINT, signal_handler)
 
-
-
-
+# if __name__ == '__main__':
+        
 for i in range(100):
     t = threading.Thread(target = process, args = [i])
     t.daemon = True 
