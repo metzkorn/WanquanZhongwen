@@ -155,18 +155,18 @@ function onKeyDown(keyDown) {
             break;
 
         case 71: // 'g'
-            if (config.grammar !== 'no' && savedSearchResults.grammar) {
+           
                 let sel = encodeURIComponent(window.getSelection().toString());
 
                 // https://resources.allsetlearning.com/chinese/grammar/%E4%B8%AA
-                let allset = 'https://resources.allsetlearning.com/chinese/grammar/' + sel;
+                let allset = 'https://zdic.net/hans/' + sel;
 
                 chrome.runtime.sendMessage({
                     type: 'open',
                     tabType: 'grammar',
                     url: allset
                 });
-            }
+            
             break;
 
         case 77: // 'm'

@@ -11,9 +11,16 @@ with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\cedict_ts.u8', "r
 
 ret_string = ""
 threads = []
-start = 110011
-step_size = 100
+start = 0 # determines starting point for dictionary
+step_size = 100 # determines how many entries to read for each thread
 
+
+def update_defs():
+    with open(r'data\new_cedict_ts.u8', "r", encoding="utf-8") as f:
+        lines = f.readlines()
+    with open(r'data\brand_new_dict.u8', "w", encoding = "utf-8") as f:
+        for line in lines:
+            entry = line.split()[0:3]
 
 def process(i): 
     idx = 0
@@ -68,16 +75,16 @@ def process(i):
 # signal.signal(signal.SIGINT, signal_handler)
 
 # if __name__ == '__main__':
-        
-for i in range(100):
-    t = threading.Thread(target = process, args = [i])
-    t.daemon = True 
-    threads.append(t) 
+def run_threads(): 
+    for i in range(100):
+        t = threading.Thread(target = process, args = [i])
+        t.daemon = True 
+        threads.append(t) 
 
-for i in range(100): 
-    threads[i].start()
-for i in range(100):
-    threads[i].join()
+    for i in range(100): 
+        threads[i].start()
+    for i in range(100):
+        threads[i].join()
 
 
 

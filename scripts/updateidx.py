@@ -6,47 +6,52 @@ import sys
 #     cedict_u8 = f.readlines()
 # with open(r'data\testing.txt', "r", encoding="utf-8") as f: 
 #    cedict_u8 = f.readlines()
-# with open(r'data\new_cedict_ts.u8', "r", encoding="utf-8") as f:
-#     new_cedict_u8 = f.readlines()
+
 
 # Used to create the fresh indices
 ##################################################################################
-# idx = 1004
-# start = 35
+def generate_indices():
+    idx = 1004
+    start = 35
+    with open(r'data\new_cedict_ts.u8', "r", encoding="utf-8") as f:
+        new_cedict_u8 = f.readlines()
 
-# with open(r"data\newindices.txt", "w", encoding = "utf-8") as f:
-#     for line in new_cedict_u8[start:]:
-#         entry = line.split()[0:2]
-#         f.write(f"{entry[0]},{idx}\n")
-#         f.write(f"{entry[1]},{idx}\n")
-#         for char in line:
-#             idx += 2 if ord(char) >= 0x10000 else 1
-#         idx += 1
+    # Writes the entries and their corresponding line index into a new indices file
+    with open(r"data\newindices.txt", "w", encoding = "utf-8") as f:
+        for line in new_cedict_u8[start:]:
+            entry = line.split()[0:2]
+            f.write(f"{entry[0]},{idx}\n")
+            f.write(f"{entry[1]},{idx}\n")
+            for char in line:
+                idx += 2 if ord(char) >= 0x10000 else 1
+            idx += 1
 
-
-# with open(r"data\newindices.txt", "r", encoding = "utf-8") as f:
-#     lines = f.readlines()
-#     lines.sort()
-
-# with open(r"data\sorted_indices.idx", "w", encoding="utf-8") as f:
-#     for line in lines:
-#         f.write(line)
+    # reads back the new indices and sorts them
+    with open(r"data\newindices.txt", "r", encoding = "utf-8") as f:
+        lines = f.readlines()
+        lines.sort()
+    # stores indices sorted
+    with open(r"data\sorted_indices.idx", "w", encoding="utf-8") as f:
+        for line in lines:
+            f.write(line)
 ##################################################################################
+    # takes the first instance of a key (entry) and writes it back to an index file
+    # TODO: Merge groups by key instead of taking only the first member of the group
+    #       This will prevent other pinyin from being lost e.g. 都 du1 dou1 
+    import itertools as it
+    with open(r"data\sorted_indices.idx", "r", encoding="utf-8") as f:
+        lines = f.readlines()
 
-import itertools as it
-with open(r"data\sorted_indices.idx", "r", encoding="utf-8") as f:
-    lines = f.readlines()
+    new_lines = [x.split(",") for x in lines]
+    groups = []
+    keys = []
+    for k,g in it.groupby(new_lines, lambda x : x[0]):
+        groups.append(list(g))
+        keys.append(k)
 
-new_lines = [x.split(",") for x in lines]
-groups = []
-keys = []
-for k,g in it.groupby(new_lines, lambda x : x[0]):
-    groups.append(list(g))
-    keys.append(k)
-
-with open(r"data\merged_sorted_indices.idx", "w", encoding="utf-8") as f:
-    for g in groups:
-        f.write(",".join(g[0]))
+    with open(r"data\merged_sorted_indices.idx", "w", encoding="utf-8") as f:
+        for g in groups:
+            f.write(",".join(g[0]))
 
 
 
