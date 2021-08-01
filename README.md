@@ -1,5 +1,5 @@
 # 中文 Zhongwen
-## 真辛苦的学习方法
+## 真努力的学习方法
 
 An adaptation of Schiller's 中文 extension for immersive study. 
 
@@ -7,6 +7,8 @@ An adaptation of Schiller's 中文 extension for immersive study.
 ## Why?
 Immersion is a better study method of foreign languages. I don't want to have to 
 translate when I think so I try to avoid using English to learn Chinese.
+
+你想学习一个语言，你必须用那个语言去学习
 
 ## Legal
 This program is free software; you can redistribute it and/or
