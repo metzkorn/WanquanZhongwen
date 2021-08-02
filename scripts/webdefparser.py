@@ -1,6 +1,6 @@
 import requests,json
 from bs4 import BeautifulSoup 
-test = "运"
+test = "验"
 
 def find_def(char):
     url = f"https://www.zdic.net/hans/{char}"
@@ -38,9 +38,12 @@ def find_def(char):
         return "没有定义"
     
     ret_str = ""
-    for x in get_ps:      
+    for x in get_ps: 
+        for tag in x.find_all():
+            tag.decompose()   
         if(x.find(id) is None):
             ret_str += ("<li>" + x.get_text() + "</li>")
+    print(ret_str)
         #maybe we go through and get rid of the ascii
 
     return ret_str 
