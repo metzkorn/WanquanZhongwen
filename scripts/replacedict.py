@@ -9,20 +9,29 @@ with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\cedict_ts.u8', "r
     lines = f.readlines()
 
 
-ret_string = ""
-threads = []
-start = 0 # determines starting point for dictionary
-step_size = 100 # determines how many entries to read for each thread
+
+
 
 
 def update_defs():
     with open(r'data\new_cedict_ts.u8', "r", encoding="utf-8") as f:
         lines = f.readlines()
-    with open(r'data\brand_new_dict.u8', "w", encoding = "utf-8") as f:
+    with open(r'data\test.txt', "w", encoding = "utf-8") as f:
         for line in lines:
             entry = line.split()[0:3]
+            if len(entry[0]) == 1:
+                ret_string = wdp.find_def(entry[1])
+                f.write(entry)
+                f.write(f" /{ret_string}/\n")
+            else:
+                f.write(line)
+
+            
 
 def process(i): 
+    start = 0 # determines starting point for dictionary
+    step_size = 100 # determines how many entries to read for each thread
+    ret_string = ""
     idx = 0
     space_flag = 0
     space_flag_down = 0
@@ -76,6 +85,7 @@ def process(i):
 
 # if __name__ == '__main__':
 def run_threads(): 
+    threads = []
     for i in range(100):
         t = threading.Thread(target = process, args = [i])
         t.daemon = True 

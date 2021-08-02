@@ -1,6 +1,6 @@
 import requests,json
 from bs4 import BeautifulSoup 
-test = "一世"
+test = "运"
 
 def find_def(char):
     url = f"https://www.zdic.net/hans/{char}"
@@ -19,16 +19,19 @@ def find_def(char):
         
 
     html = BeautifulSoup(response.content.decode('utf-8'), "lxml")
- 
     get_ps = None
-    if(html is not None):
-        get_ps = html.find(attrs={"data-type-block":"成语解释"})
-        if(get_ps is not None):
-            get_ps = get_ps.find(class_="content definitions cnr").find_all("p")
-        if(get_ps == None):
-            get_ps = html.find(attrs={"data-type-block":"网络解释"})
+    if(len(char) != 1):
+        if(html is not None):
+            get_ps = html.find(attrs={"data-type-block":"成语解释"})
             if(get_ps is not None):
-                get_ps = get_ps.find(class_="content definitions cnr").find_all("li")
+                get_ps = get_ps.find(class_="content definitions cnr").find_all("p")
+            if(get_ps == None):
+                get_ps = html.find(attrs={"data-type-block":"网络解释"})
+                if(get_ps is not None):
+                    get_ps = get_ps.find(class_="content definitions cnr").find_all("li")
+    else: 
+        get_ps = html.find(attrs={"data-type-block":"基本解释"}).find("ol").find_all("li")
+
         ##either we get a div class = "jnr" only 
         ##or there is <p> tags within. Should be second <p> tag? 
     if(get_ps == None):
