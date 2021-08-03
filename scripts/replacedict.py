@@ -5,8 +5,8 @@ import signal
 # exit_event = threading.Event()
 
 #with open(r'C:\Users\etzko\Documents\cs_projects\pythonscripts\data\cedict_ts.u8.txt', 'r',encoding="utf-8") as f:
-with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\cedict_ts.u8', "r", encoding="utf-8") as f: 
-    lines = f.readlines()
+# with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\cedict_ts.u8', "r", encoding="utf-8") as f: 
+#     lines = f.readlines()
 
 
 
@@ -14,14 +14,16 @@ with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\cedict_ts.u8', "r
 
 
 def update_defs():
-    with open(r'data\new_cedict_ts.u8', "r", encoding="utf-8") as f:
+    with open(r'C:\Users\etzko\Documents\cs_projects\pythonscripts\data\new_cedict_ts.u8', "r", encoding="utf-8") as f:
         lines = f.readlines()
-    with open(r'data\test.txt', "w", encoding = "utf-8") as f:
-        for line in lines:
+    with open(r'test.txt', "a", encoding = "utf-8") as f:
+        # for i in range(35): for when file was write
+        #     f.write(lines[i])
+        for line in lines[100151:]:
             entry = line.split()[0:3]
             if len(entry[0]) == 1:
                 ret_string = wdp.find_def(entry[1])
-                f.write(entry)
+                f.write(' '.join(entry))
                 f.write(f" /{ret_string}/\n")
             else:
                 f.write(line)
@@ -83,7 +85,6 @@ def process(i):
 
 # signal.signal(signal.SIGINT, signal_handler)
 
-# if __name__ == '__main__':
 def run_threads(): 
     threads = []
     for i in range(100):
@@ -97,6 +98,8 @@ def run_threads():
         threads[i].join()
 
 
+if __name__ == '__main__':
+    update_defs()
 
 
             

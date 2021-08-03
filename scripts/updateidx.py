@@ -13,34 +13,37 @@ import sys
 def generate_indices():
     idx = 1004
     start = 35
-    with open(r'data\new_cedict_ts.u8', "r", encoding="utf-8") as f:
+    with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\new_new_cedict_ts.u8.txt', "r", encoding="utf-8") as f:
         new_cedict_u8 = f.readlines()
 
     # Writes the entries and their corresponding line index into a new indices file
-    with open(r"data\newindices.txt", "w", encoding = "utf-8") as f:
+    with open(r"newindices.txt", "w", encoding = "utf-8") as f:
         for line in new_cedict_u8[start:]:
             entry = line.split()[0:2]
             f.write(f"{entry[0]},{idx}\n")
-            f.write(f"{entry[1]},{idx}\n")
+            if entry[0] != entry[1] : # avoiding duplicates, though I am curious as to how you would solve the merge lists problem 
+                                      # without duplicates. Not sure how it'd be done without dictionaries (itertools maybe?). 
+                                      # for some reason duplicate indices are still showing up 
+                f.write(f"{entry[1]},{idx}\n")
             for char in line:
                 idx += 2 if ord(char) >= 0x10000 else 1
             idx += 1
 
     # reads back the new indices and sorts them
-    with open(r"data\newindices.txt", "r", encoding = "utf-8") as f:
+    with open(r"newindices.txt", "r", encoding = "utf-8") as f:
         lines = f.readlines()
         lines.sort()
     # stores indices sorted
-    with open(r"data\sorted_indices.idx", "w", encoding="utf-8") as f:
-        for line in lines:
-            f.write(line)
+    # with open(r"data\sorted_indices.idx", "w", encoding="utf-8") as f:
+    #     for line in lines:
+    #         f.write(line)
 ##################################################################################
     # takes the first instance of a key (entry) and writes it back to an index file
     # TODO: Merge groups by key instead of taking only the first member of the group
     #       This will prevent other pinyin from being lost e.g. 都 du1 dou1 
     import itertools as it
-    with open(r"data\sorted_indices.idx", "r", encoding="utf-8") as f:
-        lines = f.readlines()
+    # with open(r"data\sorted_indices.idx", "r", encoding="utf-8") as f:
+    #     lines = f.readlines()
 
     new_lines = [x.split(",") for x in lines]
     groups = []
@@ -49,24 +52,30 @@ def generate_indices():
         groups.append(list(g))
         keys.append(k)
 
-    with open(r"data\merged_sorted_indices.idx", "w", encoding="utf-8") as f:
+    with open(r"C:\Users\etzko\Documents\cs_projects\zhongwen\new_cedict.idx", "w", encoding="utf-8") as f:
         for g in groups:
-            f.write(",".join(g[0]))
+            clist = [x[1][:-1] for x in g]  # need to debug this. New lines showing up and indices repeating
+            f.write(",".join([g[0][0]] + clist) + "\n")
+            # f.write(",".join(g[0]))
 
 
 
 
 # Tests that the two files have the same entry at each line. 
-######################################  
+#####################################  
 # idx = 0
 # flag = 1
-# for line in new_cedict_u8:
-#     entry1 = line.split()[0]
-#     entry2 = cedict_u8[idx].split()[0]
-#     if entry1 != entry2 and flag:
-#         print(line)
-#         flag = 0
-#     idx += 1
+# with open(r'C:\Users\etzko\Documents\cs_projects\pythonscripts\data\new_cedict_ts.u8', "r", encoding="utf-8") as f:
+#         new_cedict_u8 = f.readlines()
+# with open(r'test.txt', "r", encoding="utf-8") as f:
+#     test = f.readlines()
+#     for line in test:
+#         entry1 = line.split()[0]
+#         entry2 = new_cedict_u8[idx].split()[0]
+#         if entry1 != entry2 and flag:
+#             print(line)
+#             flag = 0
+#         idx += 1
 ######################################
 
 # print(cedict_u8[1004] == "□") -- testing indices to dictionary reads
@@ -117,3 +126,6 @@ def generate_indices():
 #         #     # while(not word_found):
 #             if(int(index) > max):
 #                 print(curr)
+
+if __name__ == "__main__": 
+    generate_indices()

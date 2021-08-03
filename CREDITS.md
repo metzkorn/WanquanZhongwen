@@ -1,4 +1,5 @@
 ### Contributors
+完全中文是一个中文扩展mod, 感谢下面的人帮助这个开发
 
 The Zhongwen Chrome extension was written by Christian Schiller with
 contributions from the following people:

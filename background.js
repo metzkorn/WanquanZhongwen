@@ -164,9 +164,9 @@ function activateExtension(tabId, showHelp) {
 
 async function loadDictData() {
     let wordDict = fetch(chrome.runtime.getURL(
-        "data/new_cedict_ts.u8")).then(r => r.text());
+        "data/new_new_cedict_ts.u8.txt")).then(r => r.text());
     let wordIndex = fetch(chrome.runtime.getURL(
-        "data/merged_sorted_indices.idx")).then(r => r.text());
+        "data/new_cedict.idx")).then(r => r.text());
     let grammarKeywords = fetch(chrome.runtime.getURL(
         "data/grammarKeywordsMin.json")).then(r => r.json());
 
