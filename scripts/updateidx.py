@@ -16,6 +16,9 @@ def generate_indices():
     start = 35
     with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\new_new_cedict_ts.u8.txt', "r", encoding="utf-8") as f:
         new_cedict_u8 = f.readlines()
+    #for line in new_cedict_u8[0:35]:
+    #    for char in line: 
+    #        idx += 1
 
     # Writes the entries and their corresponding line index into a new indices file
     with open(r"newindices.txt", "w", encoding = "utf-8") as f:
