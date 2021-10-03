@@ -9,17 +9,8 @@ import signal
 #     lines = f.readlines()
 
 
-def get_dict_lines():
-    with open(r'C:\Users\etzko\Documents\cs_projects\pythonscripts\data\new_cedict_ts.u8', "r", encoding="utf-8") as f:
-        lines = f.readlines() 
-    return lines 
 
 
-def replace_empty_def():
-    with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\new_cedict_ts.u8', "r", encoding="utf-8") as f:
-        lines = f.readlines()
-    for line in lines: 
-        pass 
 
 
 def update_defs():
@@ -49,7 +40,6 @@ def process(i):
     search_flag= 0
     fail_count = 0
     beg = start + i*step_size
-    lines = get_dict_lines()
     if(beg > 119578):
         return
     end = beg + step_size  if beg+step_size <= 119578 else 119578
@@ -58,15 +48,35 @@ def process(i):
          
         portion = lines[beg:end]
         for line in portion:
-            split_lines = line.split() 
-            current_word = split_lines[1]
-            if(i == 0):
-                print(f"Current idx: {idx} Current fail_count: {fail_count}")
-                ret_string = wdp.find_def(current_word)
-                f.write(lines[0:3])
-                if(ret_string == "没有定义"):
-                    fail_count += 1
-                f.write(f" /{ret_string}/\n")
+            current_word = ""
+            for char in line:                                # Realizing I could've used
+                _ord = ord(char)                             # line.split()[1] to get current_word much faster
+                if _ord < 128:                               # ¯\_(ツ)_/¯
+                    if space_flag and _ord==32 : 
+                        space_flag_down = 1
+                    elif _ord == 32:
+                        space_flag = 1
+
+                if space_flag and not space_flag_down: 
+                    if _ord is not 32:
+                        current_word += char
+                if space_flag_down and not search_flag:
+                    if(i == 0):
+                        print(f"Current idx: {idx} Current fail_count: {fail_count}")
+                    ret_string = wdp.find_def(current_word)
+                    search_flag = 1
+                if search_flag and _ord == 93:
+                    f.write(char)
+                    if(ret_string == "没有定义"):
+                        fail_count += 1
+                    f.write(f" /{ret_string}/\n")
+                    break 
+                f.write(char)
+
+            search_flag = 0
+            space_flag = 0
+            space_flag_down = 0
+            idx += 1
 #             if(exit_event.is_set()):
 #                 break
 
@@ -89,8 +99,7 @@ def run_threads():
 
 
 if __name__ == '__main__':
-    # run_threads()
-    # update_defs()
+    update_defs()
 
 
             
