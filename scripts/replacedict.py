@@ -99,7 +99,9 @@ def run_threads():
 
 
 if __name__ == '__main__':
-    update_defs()
+    pass 
+    # run_threads()
+    # update_defs()
 
 
             

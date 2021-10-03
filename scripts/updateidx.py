@@ -1,4 +1,5 @@
 import sys
+import re 
 ######################## FILES OPENED THROUGHOUT EXPERIMENTATION ####################################
 # with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\cedict.idx',"r", encoding="utf-8") as f:
 #     lines_idx = f.readlines()
@@ -43,7 +44,7 @@ def generate_indices():
     #       This will prevent other pinyin from being lost e.g. 都 du1 dou1 
     import itertools as it
     # with open(r"data\sorted_indices.idx", "r", encoding="utf-8") as f:
-    #     lines = f.readlines()
+        #     lines = f.readlines()
 
     new_lines = [x.split(",") for x in lines]
     groups = []
@@ -52,7 +53,7 @@ def generate_indices():
         groups.append(list(g))
         keys.append(k)
 
-    with open(r"C:\Users\etzko\Documents\cs_projects\zhongwen\new_cedict.idx", "w", encoding="utf-8") as f:
+    with open(r"C:\Users\etzko\Documents\cs_projects\zhongwen\data\new_cedict.idx", "w", encoding="utf-8") as f:
         for g in groups:
             clist = [x[1][:-1] for x in g]  # need to debug this. New lines showing up and indices repeating
             f.write(",".join([g[0][0]] + clist) + "\n")
@@ -128,4 +129,10 @@ def generate_indices():
 #                 print(curr)
 
 if __name__ == "__main__": 
+    #with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\backup\new_new_cedict_ts.u8.txt', "r", encoding="utf-8") as f:
+    #    prev_dict = f.readlines()
+    #with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\new_new_cedict_ts.u8.txt', "w", encoding="utf-8") as f: 
+        #for line in prev_dict: 
+            #f.write(re.sub("//", "/没有定义/", line)) 
+                # replace "// with definition"
     generate_indices()
