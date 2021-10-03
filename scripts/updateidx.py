@@ -55,9 +55,9 @@ def generate_indices():
 
     with open(r"C:\Users\etzko\Documents\cs_projects\zhongwen\data\new_cedict.idx", "w", encoding="utf-8") as f:
         for g in groups:
-            clist = [x[1][:-1] for x in g]  # need to debug this. New lines showing up and indices repeating
-            f.write(",".join([g[0][0]] + clist) + "\n")
-            # f.write(",".join(g[0]))
+            #clist = [x[1][:-1] for x in g]  # need to debug this. New lines showing up and indices repeating
+            #f.write(",".join([g[0][0]] + clist) + "\n")
+            f.write(",".join(g[0]))
 
 
 
