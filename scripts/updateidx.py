@@ -12,13 +12,13 @@ import re
 # Used to create the fresh indices
 ##################################################################################
 def generate_indices():
-    idx = 1004
+    idx = 0
     start = 35
     with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\new_new_cedict_ts.u8.txt', "r", encoding="utf-8") as f:
         new_cedict_u8 = f.readlines()
-    #for line in new_cedict_u8[0:35]:
-    #    for char in line: 
-    #        idx += 1
+    for line in new_cedict_u8[0:35]:
+       for char in line: 
+           idx += 1
 
     # Writes the entries and their corresponding line index into a new indices file
     with open(r"newindices.txt", "w", encoding = "utf-8") as f:
@@ -31,7 +31,7 @@ def generate_indices():
                 f.write(f"{entry[1]},{idx}\n")
             for char in line:
                 idx += 2 if ord(char) >= 0x10000 else 1
-            idx += 1
+     #       idx += 1
 
     # reads back the new indices and sorts them
     with open(r"newindices.txt", "r", encoding = "utf-8") as f:
