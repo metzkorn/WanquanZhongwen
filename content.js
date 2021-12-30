@@ -904,11 +904,7 @@ function makeHtml(result, showToneColors) {
             entry_copy = result.data[j][0].match(/^([^\s]+?)\s+([^\s]+?)\s+\[(.*?)\]?\s*\/(.+)\//);
             if(!entry_copy) continue; 
             let word_copy = result.data[j][1];
-            console.log("word: " + word); 
-            console.log("word_copy:" + word_copy);
-            console.log("prevWordCopy: " + prevWordCopy);
             if((word === word_copy || (i == 0 && j == i))) {
-                console.log("enter" + "i: " + i + " j: " +  j);
                 let pinyinClass = 'w-pinyin';
                 if (config.fontSize === 'small') {
                     pinyinClass += '-small';
@@ -1064,6 +1060,7 @@ function pinyinAndZhuyin(syllables, showToneColors, pinyinClass) {
         zhuyin += '<span class="tone' + m[4] + ' ' + zhuyinClass + '">'
             + globalThis.numericPinyin2Zhuyin(syllable) + '</span>';
     }
+    console.log(html);
     return [html, text, zhuyin];
 }
 
