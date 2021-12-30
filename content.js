@@ -904,14 +904,24 @@ function makeHtml(result, showToneColors) {
             entry_copy = result.data[j][0].match(/^([^\s]+?)\s+([^\s]+?)\s+\[(.*?)\]?\s*\/(.+)\//);
             if(!entry_copy) continue; 
             let word_copy = result.data[j][1];
+            let nextWord; 
+            if(j + 1 < result.data.length)
+                nextWord = result.data[j+1][1];
             if((word === word_copy || (i == 0 && j == i))) {
                 let pinyinClass = 'w-pinyin';
                 if (config.fontSize === 'small') {
                     pinyinClass += '-small';
                 }
-                let p = pinyinAndZhuyin(entry_copy[3], showToneColors, pinyinClass);
+                let last; 
+                // TODO: fix compound words spacing
+                // TODO: fix repeated pinyin
+                if(nextWord === word_copy)
+                    last = 1; 
+                else 
+                    last = 0; 
+                let p = pinyinAndZhuyin(entry_copy[3], showToneColors, pinyinClass, last);
                 html += p[0];
-                        // Zhuyin
+            // Zhuyin
                 if (config.zhuyin === 'yes') {
                     html += '<br>' + p[2];
                 }
@@ -1003,7 +1013,7 @@ function tonify(vowels, tone) {
     return [html, text];
 }
 
-function pinyinAndZhuyin(syllables, showToneColors, pinyinClass) {
+function pinyinAndZhuyin(syllables, showToneColors, pinyinClass, last) {
     let text = '';
     let html = '';
     let zhuyin = '';
@@ -1049,7 +1059,10 @@ function pinyinAndZhuyin(syllables, showToneColors, pinyinClass) {
         }
         let t = tonify(m[2], m[4]);
         html += m[1] + t[0] + m[3];
-        html += '</span>';
+        if(last)
+            html += ' </span>';
+        else 
+            html += '</span>'
         text += m[1] + t[1] + m[3];
 
         let zhuyinClass = 'w-zhuyin';
@@ -1060,7 +1073,6 @@ function pinyinAndZhuyin(syllables, showToneColors, pinyinClass) {
         zhuyin += '<span class="tone' + m[4] + ' ' + zhuyinClass + '">'
             + globalThis.numericPinyin2Zhuyin(syllable) + '</span>';
     }
-    console.log(html);
     return [html, text, zhuyin];
 }
 
