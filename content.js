@@ -861,58 +861,71 @@ function copyToClipboard(data) {
 function makeHtml(result, showToneColors) {
 
     let entry;
+    let entry_copy; 
     let html = '';
     let texts = [];
     let hanziClass;
+    let prevWord = null;  
+    let prevWordCopy = null; 
 
     if (result === null) return '';
 
     for (let i = 0; i < result.data.length; ++i) {
         entry = result.data[i][0].match(/^([^\s]+?)\s+([^\s]+?)\s+\[(.*?)\]?\s*\/(.+)\//);
-        if (!entry) continue;
+        if (!entry) continue; // TODO: try continue if prevWord != word 
+        let word = result.data[i][1];
+        if(prevWord != word) {
+            // Hanzi
+            if (config.simpTrad === 'auto') {
 
-        // Hanzi
+                
 
-        if (config.simpTrad === 'auto') {
+                hanziClass = 'w-hanzi';
+                if (config.fontSize === 'small') {
+                    hanziClass += '-small';
+                }
+                html += '<span class="' + hanziClass + '">' + word + '</span>&nbsp;';
 
-            let word = result.data[i][1];
+            } else {
 
-            hanziClass = 'w-hanzi';
-            if (config.fontSize === 'small') {
-                hanziClass += '-small';
+                hanziClass = 'w-hanzi';
+                if (config.fontSize === 'small') {
+                    hanziClass += '-small';
+                }
+                html += '<span class="' + hanziClass + '">' + entry[2] + '</span>&nbsp;';
+                if (entry[1] !== entry[2]) {
+                    html += '<span class="' + hanziClass + '">' + entry[1] + '</span>&nbsp;';
+                }
+
             }
-            html += '<span class="' + hanziClass + '">' + word + '</span>&nbsp;';
-
-        } else {
-
-            hanziClass = 'w-hanzi';
-            if (config.fontSize === 'small') {
-                hanziClass += '-small';
-            }
-            html += '<span class="' + hanziClass + '">' + entry[2] + '</span>&nbsp;';
-            if (entry[1] !== entry[2]) {
-                html += '<span class="' + hanziClass + '">' + entry[1] + '</span>&nbsp;';
-            }
-
-        }
-
+        
         // Pinyin
-
-        let pinyinClass = 'w-pinyin';
-        if (config.fontSize === 'small') {
-            pinyinClass += '-small';
+        for (let j = i; j < result.data.length; j++) {
+            entry_copy = result.data[j][0].match(/^([^\s]+?)\s+([^\s]+?)\s+\[(.*?)\]?\s*\/(.+)\//);
+            if(!entry_copy) continue; 
+            let word_copy = result.data[j][1];
+            console.log("word: " + word); 
+            console.log("word_copy:" + word_copy);
+            console.log("prevWordCopy: " + prevWordCopy);
+            if((word === word_copy || (i == 0 && j == i))) {
+                console.log("enter" + "i: " + i + " j: " +  j);
+                let pinyinClass = 'w-pinyin';
+                if (config.fontSize === 'small') {
+                    pinyinClass += '-small';
+                }
+                let p = pinyinAndZhuyin(entry_copy[3], showToneColors, pinyinClass);
+                html += p[0];
+                        // Zhuyin
+                if (config.zhuyin === 'yes') {
+                    html += '<br>' + p[2];
+                }
+            }
+            prevWordCopy = word_copy; 
         }
-        let p = pinyinAndZhuyin(entry[3], showToneColors, pinyinClass);
-        html += p[0];
 
-        // Zhuyin
 
-        if (config.zhuyin === 'yes') {
-            html += '<br>' + p[2];
-        }
 
         // Definition
-
         let defClass = 'w-def';
         if (config.fontSize === 'small') {
             defClass += '-small';
@@ -927,8 +940,12 @@ function makeHtml(result, showToneColors) {
         // if (config.grammar !== 'no' && result.grammar && result.grammar.index === i) {
         //     html += '<br><span class="grammar">Press "g" for grammar and usage notes.</span><br><br>';
         // }
+        // TODO: fix pinyin
 
-        texts[i] = [entry[2], entry[1], p[1], translation, entry[3]];
+        texts[i] = [entry[2], entry[1], '', translation, entry[3]];
+
+        }
+        prevWord = word; 
     }
     if (result.more) {
         html += '&hellip;<br/>';
