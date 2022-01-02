@@ -900,6 +900,7 @@ function makeHtml(result, showToneColors) {
             }
         
         // Pinyin
+        let pinyinSet = new Set(); 
         for (let j = i; j < result.data.length; j++) {
             entry_copy = result.data[j][0].match(/^([^\s]+?)\s+([^\s]+?)\s+\[(.*?)\]?\s*\/(.+)\//);
             if(!entry_copy) continue; 
@@ -914,13 +915,20 @@ function makeHtml(result, showToneColors) {
                 }
                 let last; 
                 // TODO: fix compound words spacing
-                // TODO: fix repeated pinyin
+                // last should signify last idx of current word. this if statement is wrong. 
                 if(nextWord === word_copy)
                     last = 1; 
                 else 
                     last = 0; 
                 let p = pinyinAndZhuyin(entry_copy[3], showToneColors, pinyinClass, last);
-                html += p[0];
+                let pinyinIdx = p[0].search(">"); 
+                let semicolonIdx = p[0].search(";"); 
+                let pinyinKey = p[0].slice(pinyinIdx,semicolonIdx);
+                if(!pinyinSet.has(pinyinKey)){
+                    console.log(pinyinKey);
+                    html += p[0];
+                    pinyinSet.add(pinyinKey);
+                }
             // Zhuyin
                 if (config.zhuyin === 'yes') {
                     html += '<br>' + p[2];
