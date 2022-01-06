@@ -923,7 +923,7 @@ function makeHtml(result, showToneColors) {
                 let p = pinyinAndZhuyin(entry_copy[3], showToneColors, pinyinClass, last);
                 let pinyinIdx = p[0].search(">"); 
                 let semicolonIdx = p[0].search(";"); 
-                let pinyinKey = p[0].slice(pinyinIdx,semicolonIdx);
+                let pinyinKey = p[0].slice(pinyinIdx,semicolonIdx).toLowerCase();
                 if(!pinyinSet.has(pinyinKey)){
                     console.log(pinyinKey);
                     html += p[0];
