@@ -7,7 +7,7 @@
 *.css		text
 *.json		text
 
-*.u8		text eol=crlf
+*.u8		text eol=lf
 *.idx		text eol=lf
 
 *.md		text
