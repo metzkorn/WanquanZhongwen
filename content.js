@@ -954,7 +954,6 @@ function makeHtml(result, showToneColors) {
         // if (config.grammar !== 'no' && result.grammar && result.grammar.index === i) {
         //     html += '<br><span class="grammar">Press "g" for grammar and usage notes.</span><br><br>';
         // }
-        // TODO: fix pinyin
 
         texts[i] = [entry[2], entry[1], '', translation, entry[3]];
 
