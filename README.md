@@ -1,5 +1,5 @@
 # 中文 Zhongwen
-## 真努力的学习方法
+## 努力去学习方法
 
 An adaptation of Schiller's 中文 extension for immersive study. 
 
