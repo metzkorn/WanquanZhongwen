@@ -1,5 +1,5 @@
 from bs4.element import NavigableString
-import requests,json
+import requests
 from bs4 import BeautifulSoup 
 test = "啻"
 
@@ -12,10 +12,10 @@ def find_def(char):
           response = requests.get(url, verify = False)
           break 
         except requests.exceptions.ConnectionError: 
-            print("We're failing ahhhh")
+            print("ConnectionError: This happens time to time with threading.")
             continue
         except requests.exceptions.RetryError: 
-            print("We're failing ahhhh")
+            print("RetryError: This happens time to time with threading.")
             continue
         
 
@@ -46,8 +46,8 @@ def find_def(char):
                 get_ps = get_ps.find_all("p")
             else:
                 get_ps = check_li
-        ##either we get a div class = "jnr" only 
-        ##or there is <p> tags within. Should be second <p> tag? 
+        # either we get a div class = "jnr" only 
+        # or there is <p> tags within. Should be second <p> tag? 
     if(get_ps == None):
         return "没有定义"
     
@@ -61,7 +61,7 @@ def find_def(char):
                 tag.decompose()   
         if(x.find(id) is None):
             ret_str += ("<li>" + x.get_text().strip() + "</li>")
-        #maybe we go through and get rid of the ascii
+        # TODO: 删掉英文
 
     return ret_str 
 if __name__ == '__main__':

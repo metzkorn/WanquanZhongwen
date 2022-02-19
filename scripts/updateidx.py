@@ -1,16 +1,5 @@
-import sys
-import re 
-######################## FILES OPENED THROUGHOUT EXPERIMENTATION ####################################
-# with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\cedict.idx',"r", encoding="utf-8") as f:
-#     lines_idx = f.readlines()
-# with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\cedict_ts.u8', "r", encoding="utf-8") as f:
-#     cedict_u8 = f.readlines()
-# with open(r'data\testing.txt', "r", encoding="utf-8") as f: 
-#    cedict_u8 = f.readlines()
 
 
-# Used to create the fresh indices
-##################################################################################
 def generate_indices():
     idx = 0
     start = 35
@@ -25,13 +14,13 @@ def generate_indices():
         for line in new_cedict_u8[start:]:
             entry = line.split()[0:2]
             f.write(f"{entry[0]},{idx}\n")
-            if entry[0] != entry[1] : # avoiding duplicates, though I am curious as to how you would solve the merge lists problem 
-                                      # without duplicates. Not sure how it'd be done without dictionaries (itertools maybe?). 
-                                      # for some reason duplicate indices are still showing up 
+            # avoiding duplicates, though I am curious as to how you would solve the merge lists problem 
+            # without duplicates. Not sure how it'd be done without dictionaries (itertools maybe?). 
+            # for some reason duplicate indices are still showing up 
+            if entry[0] != entry[1] : 
                 f.write(f"{entry[1]},{idx}\n")
             for char in line:
                 idx += 2 if ord(char) >= 0x10000 else 1
-     #       idx += 1
 
     # reads back the new indices and sorts them
     with open(r"newindices.txt", "r", encoding = "utf-8") as f:
@@ -43,12 +32,8 @@ def generate_indices():
     #         f.write(line)
 ##################################################################################
     # takes the first instance of a key (entry) and writes it back to an index file
-    # TODO: Merge groups by key instead of taking only the first member of the group
-    #       This will prevent other pinyin from being lost e.g. 都 du1 dou1 
-    import itertools as it
-    # with open(r"data\sorted_indices.idx", "r", encoding="utf-8") as f:
-        #     lines = f.readlines()
 
+    import itertools as it
     new_lines = [x.split(",") for x in lines]
     groups = []
     keys = []
@@ -58,7 +43,7 @@ def generate_indices():
 
     with open(r"test_idx.txt", "w", encoding="utf-8") as f:
         for g in groups:
-            clist = [x[1][:-1] for x in g]  # need to debug this. New lines showing up and indices repeating
+            clist = [x[1][:-1] for x in g] 
             f.write(",".join([g[0][0]] + clist) + "\n")
             # f.write(",".join(g[0]))
 
@@ -108,28 +93,6 @@ def generate_indices():
 # print(cedict_u8[min+1])
 ###################################################################
 
-
-# one idea for creating the indices is by modifying the current index file using the offsets
-###################################### PSEUDOCODE ###########################################
-#for each line in cedict_old & cedict_new
-#   curr_line.offset = cedict_new.curr_line.length - cedict_old.curr_line.length + prev_lines.offset
-
-#for each index in cedict.idx
-#   determine line num in old
-#   newidx = oldidx + curr_line.offset
-###################################### PSEUDOCODE ###########################################
-
-
-# with open(r'data\testidx.txt', "w", encoding ="utf-8") as f:
-#     for line in lines_idx:
-#         curr = line.split(",")
-#         word = curr[0]
-#         word_found = False
-#         max = len(cedict_u8)
-#         for index in curr[1:]:
-#         #     # while(not word_found):
-#             if(int(index) > max):
-#                 print(curr)
 
 if __name__ == "__main__": 
     #with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\backup\new_new_cedict_ts.u8.txt', "r", encoding="utf-8") as f:

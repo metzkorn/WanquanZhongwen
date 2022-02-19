@@ -1,17 +1,11 @@
 import webdefparser as wdp
 import threading 
-import signal
 
 # exit_event = threading.Event()
 
 #with open(r'C:\Users\etzko\Documents\cs_projects\pythonscripts\data\cedict_ts.u8.txt', 'r',encoding="utf-8") as f:
-# with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\cedict_ts.u8', "r", encoding="utf-8") as f: 
-#     lines = f.readlines()
-
-
-
-
-
+with open(r'C:\Users\etzko\Documents\cs_projects\zhongwen\data\cedict_ts.u8', "r", encoding="utf-8") as f: 
+    lines = f.readlines()
 
 def update_defs():
     with open(r'C:\Users\etzko\Documents\cs_projects\pythonscripts\data\new_cedict_ts.u8', "r", encoding="utf-8") as f:
@@ -33,6 +27,7 @@ def update_defs():
 def process(i): 
     start = 0 # determines starting point for dictionary
     step_size = 100 # determines how many entries to read for each thread
+    dict_entries = 119578
     ret_string = ""
     idx = 0
     space_flag = 0
@@ -40,9 +35,9 @@ def process(i):
     search_flag= 0
     fail_count = 0
     beg = start + i*step_size
-    if(beg > 119578):
+    if(beg > dict_entries):
         return
-    end = beg + step_size  if beg+step_size <= 119578 else 119578
+    end = beg + step_size  if beg+step_size <= dict_entries else dict_entries
 
     with open(rf"data\test{i}.txt", "w", encoding="utf-8") as f:
          
@@ -79,7 +74,7 @@ def process(i):
             idx += 1
 #             if(exit_event.is_set()):
 #                 break
-
+# import signal
 # def signal_handler(signum, frame):
 #     exit_event.set()
 
@@ -105,5 +100,5 @@ if __name__ == '__main__':
 
 
             
-#404 if search not found
+# 404 if search not found
 #"https://www.zdic.net/e/sci/index.php?field=0&classid=8&keyboard={encodinghere}"
