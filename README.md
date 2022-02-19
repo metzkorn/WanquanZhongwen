@@ -10,6 +10,13 @@ translate when I think so I try to avoid using English to learn Chinese.
 
 你想学习一个语言，你必须用那个语言去学习
 
+## Setup
+
+Until this published to extension markets, you can run this as followed.
+* Enable developer mode on Chrome or Edge (Firefox branch hasn't been modified yet)
+* Clone/download this repo
+* Add extension in extension settings (available after switching to developer mode) and point to this project. 
+
 ## Legal
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
