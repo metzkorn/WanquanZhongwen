@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Zhongwen: Chinese-English Dictionary",
-  "short_name": "Zhongwen",
-  "version": "5.11.0",
+  "name": "WanquanZhongwen Chinese-Chinese Dictionary",
+  "short_name": "WanquanZhongwen",
+  "version": "1.0.0",
   "author": "Christian Schiller | Modified by Michael Etzkorn",
   "homepage_url": "https://github.com/cschiller/zhongwen",
   "description": "真的学习中文， 不用翻译.",
@@ -40,7 +40,8 @@
   },
   "permissions": [
     "contextMenus",
-    "tabs"
+    "tabs",
+    "tts"
   ],
   "commands": {
     "_execute_browser_action": {

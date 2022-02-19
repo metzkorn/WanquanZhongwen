@@ -26,7 +26,10 @@ function loadVals() {
     document.querySelector(`input[name="simpTrad"][value="${simpTrad}"]`).checked = true;
 
     const zhuyin = localStorage['zhuyin'] || 'no';
-    document.querySelector('#zhuyin').checked = zhuyin === 'yes';
+    document.querySelector('#zhuyin').checked = zhuyin === 'yes'; // TODO: add remove pinyin option
+
+    const lang = localStorage['lang'] || 'zh-CN';
+    document.querySelector(`input[name="lang"][value="${lang}"]`).checed = true; 
 
     const grammar = localStorage['grammar'] || 'yes';
     document.querySelector('#grammar').checked = grammar !== 'no';
@@ -99,6 +102,12 @@ window.addEventListener('load', () => {
         input.addEventListener('change',
             () => setOption('skritterTLD', input.getAttribute('value')));
     });
+
+    document.querySelectorAll('input[name="lang"]').forEach((input) => {
+        input.addEventListener('change',
+            () => setOption('lang', input.getAttribute('value')));
+    });
+
 });
 
 loadVals();

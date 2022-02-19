@@ -68,7 +68,8 @@ let zhongwenOptions = window.zhongwenOptions = {
     zhuyin: localStorage['zhuyin'] || 'no',
     grammar: localStorage['grammar'] || 'yes',
     simpTrad: localStorage['simpTrad'] || 'classic',
-    toneColorScheme: localStorage['toneColorScheme'] || 'standard'
+    toneColorScheme: localStorage['toneColorScheme'] || 'standard',
+    lang: localStorage['lang'] || 'zh-CN'
 };
 
 function activateExtension(tabId, showHelp) {
@@ -313,6 +314,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, callback) {
             }
         }
             break;
+        case 'speak':
+            chrome.tts.speak(request.text, {'lang' : zhongwenOptions.lang, rate:0.9})
+            break; 
 
         case 'copy': {
             let txt = document.createElement('textarea');

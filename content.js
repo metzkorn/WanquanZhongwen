@@ -153,6 +153,12 @@ function onKeyDown(keyDown) {
             }
         }
             break;
+        case 70: // 'f'
+            chrome.runtime.sendMessage({
+                type: 'speak',
+                text: selText
+            });
+            break; 
 
         case 71: // 'g'
            
