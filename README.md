@@ -37,5 +37,4 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 *Copyright (C) 2019 Christian Schiller*
 
 Note from Michael Etzkorn / 明凯 : 
-I haven't asked for Christian's consent to copyright any of this (and not sure if I will ask). 
-As far as I know, the GNU license gives me the right to modify the code as I see fit. 
+As far as I know, the GNU license gives me the right to modify the code as I see fit. The copyright is still Christian's. Only thing I'd add a CCL to is the scripts to scrape definitions and update the dictionaries. 
