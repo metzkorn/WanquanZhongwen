@@ -8,6 +8,7 @@
 *.json		text
 
 *.u8		text eol=lf
+*.u8.txt text eol=lf
 *.idx		text eol=lf
 
 *.md		text
