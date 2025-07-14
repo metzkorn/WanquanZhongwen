@@ -1,7 +1,7 @@
 /*
- WanquanZhongwen - Based on the following. 
- Michael Etzkorn. 
- --- 
+ WanquanZhongwen - Based on the following.
+ Michael Etzkorn.
+ ---
 
  Zhongwen - A Chinese-English Pop-Up Dictionary
  Copyright (C) 2010-2019 Christian Schiller
@@ -52,311 +52,247 @@
 
 import { ZhongwenDictionary } from './dict.js';
 
-let isEnabled = localStorage['enabled'] === '1';
-
+let dict;
 let isActivated = false;
 
-let tabIDs = {};
-
-let dict;
-
-let zhongwenOptions = window.zhongwenOptions = {
-    css: localStorage['popupcolor'] || 'yellow',
-    tonecolors: localStorage['tonecolors'] || 'yes',
-    fontSize: localStorage['fontSize'] || 'small',
-    skritterTLD: localStorage['skritterTLD'] || 'com',
-    zhuyin: localStorage['zhuyin'] || 'no',
-    grammar: localStorage['grammar'] || 'yes',
-    simpTrad: localStorage['simpTrad'] || 'classic',
-    toneColorScheme: localStorage['toneColorScheme'] || 'standard'
+// Default options
+const defaultOptions = {
+    css: 'yellow',
+    tonecolors: 'yes',
+    fontSize: 'small',
+    skritterTLD: 'com',
+    zhuyin: 'no',
+    grammar: 'yes',
+    simpTrad: 'classic',
+    toneColorScheme: 'standard',
+    enabled: '1', // '1' for enabled, '0' for disabled
+    wordlist: [],
+    saveToWordList: 'allEntries'
 };
 
-function activateExtension(tabId, showHelp) {
-
-    isActivated = true;
-
-    isEnabled = true;
-    // values in localStorage are always strings
-    localStorage['enabled'] = '1';
-
-    if (!dict) {
-        loadDictionary().then(r => dict = r);
-    }
-
-    chrome.tabs.sendMessage(tabId, {
-        'type': 'enable',
-        'config': zhongwenOptions
-    });
-
-    if (showHelp) {
-        chrome.tabs.sendMessage(tabId, {
-            'type': 'showHelp'
-        });
-    }
-
-    chrome.browserAction.setBadgeBackgroundColor({
-        'color': [255, 0, 0, 255]
-    });
-
-    chrome.browserAction.setBadgeText({
-        'text': 'On'
-    });
-
-    chrome.contextMenus.create(
-        {
-            title: 'Open word list',
-            onclick: function () {
-                let url = '/wordlist.html';
-                let tabID = tabIDs['wordlist'];
-                if (tabID) {
-                    chrome.tabs.get(tabID, function (tab) {
-                        if (tab && tab.url && (tab.url.endsWith('wordlist.html'))) {
-                            chrome.tabs.update(tabID, {
-                                active: true
-                            });
-                        } else {
-                            chrome.tabs.create({
-                                url: url
-                            }, function (tab) {
-                                tabIDs['wordlist'] = tab.id;
-                            });
-                        }
-                    });
-                } else {
-                    chrome.tabs.create(
-                        { url: url },
-                        function (tab) {
-                            tabIDs['wordlist'] = tab.id;
-                        }
-                    );
-                }
-            }
-        }
-    );
-    chrome.contextMenus.create(
-        {
-            title: 'Show help in new tab',
-            onclick: function () {
-                let url = '/help.html';
-                let tabID = tabIDs['help'];
-                if (tabID) {
-                    chrome.tabs.get(tabID, function (tab) {
-                        if (tab && (tab.url.endsWith('help.html'))) {
-                            chrome.tabs.update(tabID, {
-                                active: true
-                            });
-                        } else {
-                            chrome.tabs.create({
-                                url: url
-                            }, function (tab) {
-                                tabIDs['help'] = tab.id;
-                            });
-                        }
-                    });
-                } else {
-                    chrome.tabs.create(
-                        { url: url },
-                        function (tab) {
-                            tabIDs['help'] = tab.id;
-                        }
-                    );
-                }
-            }
-        }
-    );
+// Function to get options from storage, providing defaults if not set
+async function getOptions() {
+    const storedOptions = await chrome.storage.local.get(Object.keys(defaultOptions));
+    return { ...defaultOptions, ...storedOptions };
 }
 
 async function loadDictData() {
-    let wordDict = fetch(chrome.runtime.getURL(
-        "data/new_new_cedict_ts.u8.txt")).then(r => r.text());
-    let wordIndex = fetch(chrome.runtime.getURL(
-        "data/multi_cedict.idx")).then(r => r.text());
-    let grammarKeywords = fetch(chrome.runtime.getURL(
-        "data/grammarKeywordsMin.json")).then(r => r.json());
+    const wordDictUrl = chrome.runtime.getURL("data/new_new_cedict_ts.u8.txt");
+    const wordIndexUrl = chrome.runtime.getURL("data/multi_cedict.idx");
+    const grammarKeywordsUrl = chrome.runtime.getURL("data/grammarKeywordsMin.json");
 
-    return Promise.all([wordDict, wordIndex, grammarKeywords]);
+    const [wordDictRes, wordIndexRes, grammarKeywordsRes] = await Promise.all([
+        fetch(wordDictUrl),
+        fetch(wordIndexUrl),
+        fetch(grammarKeywordsUrl)
+    ]);
+
+    const [wordDict, wordIndex, grammarKeywords] = await Promise.all([
+        wordDictRes.text(),
+        wordIndexRes.text(),
+        grammarKeywordsRes.json()
+    ]);
+
+    return { wordDict, wordIndex, grammarKeywords };
 }
 
-
-async function loadDictionary() {
-    let [wordDict, wordIndex, grammarKeywords] = await loadDictData();
-    return new ZhongwenDictionary(wordDict, wordIndex, grammarKeywords);
-}
-
-function deactivateExtension() {
-
-    isActivated = false;
-
-    isEnabled = false;
-    // values in localStorage are always strings
-    localStorage['enabled'] = '0';
-
-    dict = undefined;
-
-    chrome.browserAction.setBadgeBackgroundColor({
-        'color': [0, 0, 0, 0]
-    });
-
-    chrome.browserAction.setBadgeText({
-        'text': ''
-    });
-
-    // Send a disable message to all tabs in all windows.
-    chrome.windows.getAll(
-        { 'populate': true },
-        function (windows) {
-            for (let i = 0; i < windows.length; ++i) {
-                let tabs = windows[i].tabs;
-                for (let j = 0; j < tabs.length; ++j) {
-                    chrome.tabs.sendMessage(tabs[j].id, {
-                        'type': 'disable'
-                    });
-                }
-            }
-        }
-    );
-
-    chrome.contextMenus.removeAll();
-}
-
-function activateExtensionToggle(currentTab) {
-    if (isActivated) {
-        deactivateExtension();
-    } else {
-        activateExtension(currentTab.id, true);
-    }
-}
-
-function enableTab(tabId) {
-    if (isEnabled) {
-
-        if (!isActivated) {
-            activateExtension(tabId, false);
-        }
-
-        chrome.tabs.sendMessage(tabId, {
-            'type': 'enable',
-            'config': zhongwenOptions
-        });
-    }
-}
-
-function search(text) {
-
+async function getDictionary() {
     if (!dict) {
-        // dictionary not loaded
-        return;
+        const { wordDict, wordIndex, grammarKeywords } = await loadDictData();
+        dict = new ZhongwenDictionary(wordDict, wordIndex, grammarKeywords);
     }
-
-    let entry = dict.wordSearch(text);
-
-    if (entry) {
-        for (let i = 0; i < entry.data.length; i++) {
-            let word = entry.data[i][1];
-            if (dict.hasKeyword(word) && (entry.matchLen === word.length)) {
-                // the final index should be the last one with the maximum length
-                entry.grammar = { keyword: word, index: i };
-            }
-        }
-    }
-
-    return entry;
+    return dict;
 }
 
-chrome.browserAction.onClicked.addListener(activateExtensionToggle);
+function updateIcon(enabled) {
+    if (enabled) {
+        chrome.action.setBadgeBackgroundColor({ color: [255, 0, 0, 255] });
+        chrome.action.setBadgeText({ text: 'On' });
+    } else {
+        chrome.action.setBadgeBackgroundColor({ color: [0, 0, 0, 0] });
+        chrome.action.setBadgeText({ text: '' });
+    }
+}
 
-chrome.tabs.onActivated.addListener(activeInfo => {
-    if (activeInfo.tabId === tabIDs['wordlist']) {
-        chrome.tabs.reload(activeInfo.tabId);
-    } else if (activeInfo.tabId !== tabIDs['help']) {
-        enableTab(activeInfo.tabId);
+function setupContextMenus() {
+    chrome.contextMenus.removeAll(() => {
+        chrome.contextMenus.create({
+            id: 'open-wordlist',
+            title: 'Open word list',
+            contexts: ['action']
+        });
+        chrome.contextMenus.create({
+            id: 'show-help',
+            title: 'Show help in new tab',
+            contexts: ['action']
+        });
+    });
+}
+
+async function activateExtension(tabId, showHelp) {
+    isActivated = true;
+    await chrome.storage.local.set({ enabled: '1' });
+    updateIcon(true);
+    setupContextMenus();
+    await getDictionary();
+
+    const options = await getOptions();
+    chrome.tabs.sendMessage(tabId, {
+        type: 'enable',
+        config: options
+    }).catch(e => console.log("Could not enable tab:", e));
+
+    if (showHelp) {
+        chrome.tabs.sendMessage(tabId, { type: 'showHelp' }).catch(e => console.log("Could not show help:", e));
+    }
+}
+
+async function deactivateExtension() {
+    isActivated = false;
+    await chrome.storage.local.set({ enabled: '0' });
+    dict = null; // Allow dictionary to be garbage collected
+    updateIcon(false);
+    chrome.contextMenus.removeAll();
+
+    const tabs = await chrome.tabs.query({});
+    for (const tab of tabs) {
+        // Ignore errors for tabs that can't be scripted
+        chrome.tabs.sendMessage(tab.id, { type: 'disable' }).catch(() => {});
+    }
+}
+
+async function enableTab(tabId) {
+    const { enabled } = await getOptions();
+    if (enabled === '1') {
+        if (!isActivated) {
+            isActivated = true;
+            updateIcon(true);
+            setupContextMenus();
+        }
+        const options = await getOptions();
+        chrome.tabs.sendMessage(tabId, {
+            type: 'enable',
+            config: options
+        }).catch(() => { /* Suppress errors for non-scriptable tabs */ });
+    }
+}
+
+// Initialize extension state on startup
+chrome.runtime.onInstalled.addListener(async () => {
+    const { enabled } = await getOptions();
+    if (enabled === '1') {
+        isActivated = true;
+        updateIcon(true);
+        setupContextMenus();
     }
 });
-chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
-    if (changeInfo.status === 'complete' && tabId !== tabIDs['help'] && tabId !== tabIDs['wordlist']) {
+
+chrome.runtime.onStartup.addListener(async () => {
+    const { enabled } = await getOptions();
+    if (enabled === '1') {
+        isActivated = true;
+        updateIcon(true);
+        setupContextMenus();
+    }
+});
+
+
+// Main toggle action
+chrome.action.onClicked.addListener(async (tab) => {
+    const { enabled } = await getOptions();
+    if (enabled === '1') {
+        await deactivateExtension();
+    } else {
+        await activateExtension(tab.id, true);
+    }
+});
+
+// Context menu actions
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+    let page = 'help.html';
+    if (info.menuItemId === 'open-wordlist') {
+        page = 'wordlist.html';
+    }
+    const url = chrome.runtime.getURL(page);
+    chrome.tabs.create({ url });
+});
+
+// Tab event listeners
+chrome.tabs.onActivated.addListener(activeInfo => {
+    enableTab(activeInfo.tabId);
+});
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (changeInfo.status === 'complete' && tab.url && !tab.url.startsWith('chrome://')) {
         enableTab(tabId);
     }
 });
 
-function createTab(url, tabType) {
-    chrome.tabs.create({ url }, tab => {
-        tabIDs[tabType] = tab.id;
-    });
-}
-
-chrome.runtime.onMessage.addListener(function (request, sender, callback) {
-
-    let tabID;
-
-    switch (request.type) {
-
-        case 'search': {
-            let response = search(request.text);
-            response.originalText = request.originalText;
-            callback(response);
-        }
-            break;
-
-        case 'open': {
-            tabID = tabIDs[request.tabType];
-            if (tabID && request.tabType != 'grammar') {
-                chrome.tabs.get(tabID, () => {
-                    if (!chrome.runtime.lastError) {
-                        // activate existing tab
-                        chrome.tabs.update(tabID, { active: true, url: request.url });
-                    } else {
-                        createTab(request.url, request.tabType);
-                    }
-                });
-            } else {
-                createTab(request.url, request.tabType);
-            }
-        }
-            break;
-
-        case 'copy': {
-            let txt = document.createElement('textarea');
-            txt.style.position = "absolute";
-            txt.style.left = "-100%";
-            txt.value = request.data;
-            document.body.appendChild(txt);
-            txt.select();
-            document.execCommand('copy');
-            document.body.removeChild(txt);
-        }
-            break;
-
-        case 'add': {
-            let json = localStorage['wordlist'];
-
-            let saveFirstEntryOnly = localStorage['saveToWordList'] === 'firstEntryOnly';
-
-            let wordlist;
-            if (json) {
-                wordlist = JSON.parse(json);
-            } else {
-                wordlist = [];
-            }
-
-            for (let i in request.entries) {
-
-                let entry = {};
-                entry.timestamp = Date.now();
-                entry.simplified = request.entries[i].simplified;
-                entry.traditional = request.entries[i].traditional;
-                entry.pinyin = request.entries[i].pinyin;
-                entry.definition = request.entries[i].definition;
-
-                wordlist.push(entry);
-
-                if (saveFirstEntryOnly) {
-                    break;
+// Message listener for content scripts
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    (async () => {
+        switch (request.type) {
+            case 'search': {
+                const dictionary = await getDictionary();
+                if (!dictionary) {
+                    sendResponse(null);
+                    return;
                 }
+                let entry = dictionary.wordSearch(request.text);
+                if (entry) {
+                    for (let i = 0; i < entry.data.length; i++) {
+                        let word = entry.data[i][1];
+                        if (dictionary.hasKeyword(word) && (entry.matchLen === word.length)) {
+                            entry.grammar = { keyword: word, index: i };
+                        }
+                    }
+                    entry.originalText = request.originalText;
+                }
+                sendResponse(entry);
+                break;
             }
-            localStorage['wordlist'] = JSON.stringify(wordlist);
+            case 'open': {
+                const url = request.url.startsWith('/') ? chrome.runtime.getURL(request.url.substring(1)) : request.url;
+                const allTabs = await chrome.tabs.query({});
+                const existingTab = allTabs.find(tab => tab.url === url);
+                if (existingTab) {
+                    chrome.tabs.update(existingTab.id, { active: true });
+                } else {
+                    chrome.tabs.create({ url });
+                }
+                break;
+            }
+            case 'copy': {
+                if (sender.tab) {
+                    chrome.scripting.executeScript({
+                        target: { tabId: sender.tab.id },
+                        func: (textToCopy) => {
+                            navigator.clipboard.writeText(textToCopy).catch(err => console.error('Copy failed:', err));
+                        },
+                        args: [request.data]
+                    });
+                }
+                break;
+            }
+            case 'add': {
+                const { wordlist, saveToWordList } = await getOptions();
+                const currentList = wordlist || [];
+                const saveFirstEntryOnly = saveToWordList === 'firstEntryOnly';
 
-            tabID = tabIDs['wordlist'];
+                for (const reqEntry of request.entries) {
+                    currentList.push({
+                        timestamp: Date.now(),
+                        simplified: reqEntry.simplified,
+                        traditional: reqEntry.traditional,
+                        pinyin: reqEntry.pinyin,
+                        definition: reqEntry.definition
+                    });
+                    if (saveFirstEntryOnly) break;
+                }
+                await chrome.storage.local.set({ wordlist: currentList });
+                break;
+            }
         }
-            break;
-    }
+    })();
+    return true; // Indicates that the response is sent asynchronously
 });

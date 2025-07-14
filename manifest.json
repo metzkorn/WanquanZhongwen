@@ -1,55 +1,53 @@
 {
-  "manifest_version": 2,
-  "name": "Zhongwen: Chinese-English Dictionary",
-  "short_name": "Zhongwen",
-  "version": "5.11.0",
-  "author": "Christian Schiller | Modified by Michael Etzkorn",
-  "homepage_url": "https://github.com/cschiller/zhongwen",
-  "description": "真的学习中文， 不用翻译.",
+  "manifest_version": 3,
+  "name": "WanquanZhongwen: Chinese-Chinese Dictionary",
+  "short_name": "WanquanZhongwen",
+  "version": "5.0.0",
+  "description": "A Chinese-Chinese pop-up dictionary. This is a modified version for immersive learning.",
   "icons": {
     "16": "images/zhongwen16.png",
-    "48": "images/zhongwen48.png",
-    "128": "images/zhongwen.png"
-  },
-  "browser_action": {
-    "default_icon": "images/zhongwen48.png",
-    "default_title": "中文词典"
+    "48": "images/zhongwen48.png"
   },
   "background": {
-    "page": "background.html"
+    "service_worker": "background.js",
+    "type": "module"
   },
+  "action": {
+    "default_title": "WanquanZhongwen"
+  },
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "scripting"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "content_scripts": [
     {
       "matches": [
         "<all_urls>"
+      ],
+      "css": [
+        "css/content.css"
       ],
       "js": [
         "js/jquery-3.3.1.min.js",
         "js/zhuyin.js",
         "content.js"
       ],
-      "css": [
-        "css/content.css"
-      ],
       "all_frames": true
     }
   ],
-  "options_ui": {
-    "page": "options.html",
-    "open_in_tab": true
-  },
-  "permissions": [
-    "contextMenus",
-    "tabs"
-  ],
-  "commands": {
-    "_execute_browser_action": {
-      "description": "Enable/Disable Zhongwen"
-    }
-  },
+  "options_page": "options.html",
   "web_accessible_resources": [
-    "css/*",
-    "js/*",
-    "images/*"
+    {
+      "resources": [
+        "data/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
   ]
 }
